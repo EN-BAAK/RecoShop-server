@@ -8,8 +8,10 @@ dotenv.config()
 
 import { error } from "./src/middlewares/error";
 import db from "./src/models"
+import AuthRouter from "./src/routers/auth"
 
 const app = express()
+
 app.use(cors({
   origin: [process.env.FRONTEND_URL!],
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -19,6 +21,8 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use("/api/v0/auth", AuthRouter)
 
 app.use(error)
 

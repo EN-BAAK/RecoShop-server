@@ -14,5 +14,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src", "recoshopServer.ts"]
+  "include": [
+    "src",
+    "recoshopServer.ts"
+  ]
 }
