@@ -61,7 +61,7 @@ export const resetForgottenPassword = [
 ];
 
 export const login = [
-  param("email")
+  body("email")
     .notEmpty().withMessage("Email is required")
     .isEmail().withMessage("Invalid email")
     .normalizeEmail(),

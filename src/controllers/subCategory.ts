@@ -3,7 +3,7 @@ import { catchAsyncErrors } from "../middlewares/error";
 import { getAllSubCategories as getAllSubCategoriesService, getSubCategoryById as getSubCategoryByIdService, createSubCategory as createSubCategoryService, updateSubCategory as updateSubCategoryService, deleteSubCategory as deleteSubCategoryService, } from "../services/subCategory";
 import { sendSuccessResponse } from "../middlewares/success";
 
-export const getAllSubCategories = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getAllSubCategories = catchAsyncErrors(async (_: Request, res: Response) => {
   const subs = await getAllSubCategoriesService();
   sendSuccessResponse(res, 200, "Subcategories fetched successfully", subs);
 });

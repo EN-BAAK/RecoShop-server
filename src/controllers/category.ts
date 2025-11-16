@@ -11,7 +11,7 @@ import {
 } from "../services/category";
 import { sendSuccessResponse } from "../middlewares/success";
 
-export const getAllCategories = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getAllCategories = catchAsyncErrors(async (_: Request, res: Response) => {
   const categories = await getCategoriesService();
   sendSuccessResponse(res, 200, "Categories fetched successfully", categories);
 });
@@ -22,7 +22,7 @@ export const getCategoryById = catchAsyncErrors(async (req: Request, res: Respon
   sendSuccessResponse(res, 200, "Category fetched successfully", category);
 });
 
-export const getAllCategoriesWithSubCategory = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getAllCategoriesWithSubCategory = catchAsyncErrors(async (_: Request, res: Response) => {
   const categories = await getAllCategoriesWithSubCategoryService();
   sendSuccessResponse(res, 200, "Categories with subcategories fetched successfully", categories);
 });

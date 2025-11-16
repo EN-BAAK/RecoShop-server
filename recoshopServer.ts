@@ -9,6 +9,9 @@ dotenv.config()
 import { error } from "./src/middlewares/error";
 import db from "./src/models"
 import AuthRouter from "./src/routers/auth"
+import SubCategoryRouter from "./src/routers/subCategory"
+import CategoryRouter from "./src/routers/category"
+import ProductRouter from "./src/routers/product"
 
 const app = express()
 
@@ -23,6 +26,9 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use("/api/v0/auth", AuthRouter)
+app.use("/api/v0/sub-categories", SubCategoryRouter)
+app.use("/api/v0/categories", CategoryRouter)
+app.use("/api/v0/products", ProductRouter)
 
 app.use(error)
 

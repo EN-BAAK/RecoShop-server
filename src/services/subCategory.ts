@@ -37,7 +37,14 @@ export const createSubCategory = async (data: SubCategoryCreationAttributes) => 
   await findCategoryById(data.categoryId)
 
   const category = await SubCategory.create(data)
-  return category;
+  const mainCategory = await findCategoryById(category.categoryId)
+
+  const json = category.toJSON()
+  return {
+    ...json,
+    categoryId: undefined,
+    category: mainCategory.title
+  };
 };
 
 export const updateSubCategory = async (id: number, data: Partial<SubCategoryCreationAttributes>) => {
@@ -51,7 +58,15 @@ export const updateSubCategory = async (id: number, data: Partial<SubCategoryCre
   }
 
   await category.save();
-  return category;
+  const mainCategory = await findCategoryById(category.categoryId)
+
+  const json = category.toJSON()
+
+  return {
+    ...json,
+    categoryId: undefined,
+    category: mainCategory.title
+  };
 };
 
 export const deleteSubCategory = async (id: number) => {

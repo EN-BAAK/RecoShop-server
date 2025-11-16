@@ -39,7 +39,7 @@ export const sendForgotPasswordVerificationCode = async (
   resetRequest: undefined | ResetPasswordRequest | null,
   transaction?: any
 ) => {
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
   const code = generateVerificationCode();
 
   if (resetRequest) {

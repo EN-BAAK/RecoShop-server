@@ -1,5 +1,4 @@
 import { findCategoryById } from "../middlewares/category";
-import { findSubCategoryById } from "../middlewares/subCategory";
 import { Category } from "../models/category";
 import { SubCategory } from "../models/subcategory";
 import { CategoryCreationAttributes } from "../types/models";
@@ -23,7 +22,7 @@ export const getAllCategoriesWithSubCategory = async () => {
 };
 
 export const getCategory = async (id: number) => {
-  const category = findSubCategoryById(id)
+  const category = findCategoryById(id)
   return category
 }
 
