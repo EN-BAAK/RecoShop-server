@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllProducts, getProductById, getProductImage, createProduct, updateProduct, deleteProduct, } from "../controllers/product";
+import { getAllProducts, getProductSettingsById, getProductImage, createProduct, updateProduct, deleteProduct, } from "../controllers/product";
 import { createProduct as createProductValidation, updateProduct as updateProductValidation, productIdParam as productIdParamValidation, } from "../validations/product";
 import { validation } from "../middlewares/error";
 import { uploadProductImage } from "../utils/multer";
@@ -7,7 +7,7 @@ import { uploadProductImage } from "../utils/multer";
 const router = express.Router();
 
 router.get("/", getAllProducts);
-router.get("/:id", productIdParamValidation, validation, getProductById);
+router.get("/settings/:id", productIdParamValidation, validation, getProductSettingsById);
 router.get("/:id/image", productIdParamValidation, validation, getProductImage);
 
 router.post("/", uploadProductImage.single("image"), createProductValidation, validation, createProduct);

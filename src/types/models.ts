@@ -70,7 +70,6 @@ export interface ProductAttributes {
   price: number,
   brand: string,
   imgUrl?: string | null,
-  categoryId: number
 }
 
 export interface ProductCreationAttributes extends Omit<ProductAttributes, "id"> { }

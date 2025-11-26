@@ -9,3 +9,12 @@ export const findCategoryById = async (id: number) => {
 
   return category
 }
+
+export const findCategoryByTitle = async (title: string) => {
+  const category = await Category.findOne({ where: { title } })
+
+  if (!category)
+    throw new ErrorHandler("Category not found", 404)
+
+  return category
+}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllProducts as getAllProductsService, getProductById as getProductByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, } from "../services/product";
+import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, } from "../services/product";
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllProducts = catchAsyncErrors(async (_: Request, res: Response) => {
@@ -8,9 +8,9 @@ export const getAllProducts = catchAsyncErrors(async (_: Request, res: Response)
   sendSuccessResponse(res, 200, "Products fetched successfully", products);
 });
 
-export const getProductById = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getProductSettingsById = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const product = await getProductByIdService(id);
+  const product = await getProductSettingsByIdService(id);
   sendSuccessResponse(res, 200, "Product fetched successfully", product);
 });
 

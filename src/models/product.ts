@@ -1,7 +1,8 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import { BelongsToManySetAssociationsMixin, DataTypes, Model, Sequelize } from "sequelize";
 import fs from "fs";
 import path from "path";
 import { ProductAttributes, ProductCreationAttributes } from "../types/models";
+import { SubCategory } from "./subcategory";
 
 export class Product extends Model<ProductAttributes, ProductCreationAttributes>
   implements ProductAttributes {
@@ -11,20 +12,23 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
   public price!: number;
   public imgUrl!: string | undefined | null;
   public brand!: string;
-  public categoryId!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  public setSubCategories!: BelongsToManySetAssociationsMixin<SubCategory, number>;
+
   static associate(models: any) {
-    Product.belongsTo(models.SubCategory, {
-      foreignKey: "categoryId",
-      as: "category",
-      onDelete: "CASCADE",
+    Product.belongsToMany(models.SubCategory, {
+      through: "ProductSubCategories",
+      foreignKey: "productId",
+      otherKey: "subCategoryId",
+      as: "subCategories"
     });
 
-    models.SubCategory.hasMany(Product, {
-      foreignKey: "categoryId",
+    models.SubCategory.belongsToMany(Product, {
+      through: "ProductSubCategories",
+      foreignKey: "subCategoryId",
       as: "product",
       onDelete: "CASCADE",
     });
@@ -57,10 +61,6 @@ export default (sequelize: Sequelize) => {
         validate: {
           min: 0,
         },
-      },
-      categoryId: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: true,
       },
       imgUrl: {
         type: DataTypes.TEXT,

@@ -5,7 +5,12 @@ export const createProduct = [
   body("desc").notEmpty().withMessage("Description is required"),
   body("brand").notEmpty().withMessage("Brand is required"),
   body("price").isFloat({ min: 0 }).withMessage("Price must be a valid number"),
-  body("categoryId").isInt({ min: 1 }).withMessage("Valid categoryId is required"),
+  body("categories")
+    .isArray({ min: 1 })
+    .withMessage("categories must be a non-empty array"),
+  body("categories.*")
+    .isInt({ min: 1 })
+    .withMessage("Each category id must be a valid number"),
 ];
 
 export const updateProduct = [
@@ -15,7 +20,8 @@ export const updateProduct = [
   body("brand").optional().isString(),
   body("price").optional().isFloat({ min: 0 }),
   body("categoryId").optional().isInt({ min: 1 }),
-  body("imgUrl").optional(),
+  body("image").optional(),
+  body("removeImage").optional().isInt({ min: 0, max: 1 })
 ];
 
 export const productIdParam = [

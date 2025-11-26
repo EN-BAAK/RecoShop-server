@@ -1,4 +1,4 @@
-import { findCategoryById } from "../middlewares/category";
+import { findCategoryById, findCategoryByTitle } from "../middlewares/category";
 import { findSubCategoryById } from "../middlewares/subCategory";
 import { Category } from "../models/category";
 import { SubCategory } from "../models/subcategory";
@@ -26,6 +26,26 @@ export const getAllSubCategories = async () => {
   })
 
   return data
+};
+
+export const getSubCategoriesByCategoryTitle = async (categoryName: string) => {
+  const category = await findCategoryByTitle(categoryName)
+
+  const subCategories = await SubCategory.findAll({
+    where: { categoryId: category.id },
+    order: [["id", "DESC"]],
+    attributes: ["id", "title"]
+  });
+
+  const data = subCategories.map((sub: any) => {
+    const json = sub.toJSON();
+
+    return {
+      ...json,
+    };
+  });
+
+  return data;
 };
 
 export const getSubCategoryById = async (id: number) => {
