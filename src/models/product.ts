@@ -11,7 +11,7 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
   public desc!: string;
   public price!: number;
   public imgUrl!: string | undefined | null;
-  public brand!: string;
+  public brandId!: number;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -24,6 +24,17 @@ export class Product extends Model<ProductAttributes, ProductCreationAttributes>
       foreignKey: "productId",
       otherKey: "subCategoryId",
       as: "subCategories"
+    });
+    Product.belongsTo(models.Brand, {
+      foreignKey: "brandId",
+      as: "brand",
+    });
+
+    models.Brand.hasMany(Product, {
+      foreignKey: "brandId",
+      as: "products",
+      onDelete: "CASCADE",
+      hooks: true,
     });
 
     models.SubCategory.belongsToMany(Product, {
@@ -51,9 +62,10 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.TEXT,
         allowNull: false,
       },
-      brand: {
-        type: DataTypes.STRING,
+      brandId: {
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        references: { model: "brands", key: "id" },
       },
       price: {
         type: DataTypes.FLOAT,

@@ -1,4 +1,3 @@
-// controllers/categoryController.ts
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
 import {

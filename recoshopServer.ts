@@ -12,6 +12,7 @@ import AuthRouter from "./src/routers/auth"
 import SubCategoryRouter from "./src/routers/subCategory"
 import CategoryRouter from "./src/routers/category"
 import ProductRouter from "./src/routers/product"
+import BrandRouter from "./src/routers/brand"
 
 const app = express()
 
@@ -29,6 +30,7 @@ app.use("/api/v0/auth", AuthRouter)
 app.use("/api/v0/sub-categories", SubCategoryRouter)
 app.use("/api/v0/categories", CategoryRouter)
 app.use("/api/v0/products", ProductRouter)
+app.use("/api/v0/brands", BrandRouter)
 
 app.use(error)
 

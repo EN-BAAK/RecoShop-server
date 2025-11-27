@@ -1,4 +1,4 @@
-import { Role } from "../models/rule";
+import { Role } from "../models/role";
 import { User } from "../models/user";
 import ErrorHandler from "./error";
 

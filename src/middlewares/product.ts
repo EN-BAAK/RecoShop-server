@@ -1,5 +1,6 @@
 import { Category } from "../models/category"
 import { Product } from "../models/product"
+import { findBrandById } from "./brand"
 import ErrorHandler from "./error"
 
 export const findProductById = async (id: number) => {
@@ -26,9 +27,17 @@ export const formatProductResponse = async (product: any) => {
     title: sc.title,
   }));
 
-  return {
+  const brand = await findBrandById(product.brandId);
+
+  const brandName = brand.name;
+
+  const result = {
     ...json,
+    brand: brandName,
+    brandId: undefined,
     category: category?.title || undefined,
     subCategories: cleanSubCats,
   };
+
+  return result;
 };

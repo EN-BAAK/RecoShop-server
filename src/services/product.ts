@@ -1,7 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { Product } from "../models/product";
+import { Brand } from "../models/brand";
 import ErrorHandler from "../middlewares/error";
+import { findBrandById } from "../middlewares/brand";
 import { ProductCreationAttributes } from "../types/models";
 import { findProductById, formatProductResponse } from "../middlewares/product";
 import { isSubCategoriesRelatedToSameCategory } from "../controllers/subCategory";
@@ -13,6 +15,7 @@ export const getAllProducts = async () => {
     attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     order: [["id", "DESC"]],
     include: [
+      { model: Brand, as: "brand", attributes: ["id", "name"] },
       {
         model: SubCategory,
         as: "subCategories",
@@ -35,6 +38,7 @@ export const getProductSettingsById = async (id: number) => {
   const product = await Product.findByPk(id, {
     attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     include: [
+      { model: Brand, as: "brand", attributes: ["id", "name"] },
       {
         model: SubCategory,
         as: "subCategories",
@@ -58,8 +62,12 @@ export const getProductSettingsById = async (id: number) => {
 
   const cleanSubCats = subCats.map((sc: any) => (String(sc.id)));
 
+  const brand = await findBrandById(product.brandId);
+
   return {
     ...json,
+    brandId: undefined,
+    brand: brand.name,
     subCategories: undefined,
     category: category?.title,
     categories: cleanSubCats,
@@ -82,6 +90,7 @@ export const createProduct = async (
   image?: Express.Multer.File
 ) => {
   await isSubCategoriesRelatedToSameCategory(data.categories);
+  await findBrandById(data.brandId);
   const imgUrl = image ? path.join("uploads/products", image.filename) : null;
 
   const product = await Product.create({
@@ -93,6 +102,7 @@ export const createProduct = async (
 
   const fullProduct = await Product.findByPk(product.id, {
     include: [
+      { model: Brand, as: "brand", attributes: ["id", "name"] },
       { model: SubCategory, as: "subCategories", attributes: ["id", "title", "categoryId"], through: { attributes: [] } }
     ]
   });
@@ -125,12 +135,16 @@ export const updateProduct = async (
   if (data.title !== undefined) product.title = data.title;
   if (data.desc !== undefined) product.desc = data.desc;
   if (data.price !== undefined) product.price = data.price;
-  if (data.brand !== undefined) product.brand = data.brand;
+  if (data.brandId !== undefined) {
+    await findBrandById(data.brandId);
+    product.brandId = data.brandId;
+  }
 
   await product.save();
 
   const fullProduct = await Product.findByPk(id, {
     include: [
+      { model: Brand, as: "brand", attributes: ["id", "name"] },
       { model: SubCategory, as: "subCategories", attributes: ["id", "title", "categoryId"], through: { attributes: [] } }
     ]
   });
@@ -139,9 +153,7 @@ export const updateProduct = async (
 };
 
 export const deleteProduct = async (id: number) => {
-  const product = await Product.findByPk(id);
-  if (!product) throw new ErrorHandler("Product not found", 404);
-
+  const product = await findProductById(id);
   await product.destroy();
 
   return { message: "Product deleted successfully" };

@@ -3,7 +3,7 @@ import { body, param } from "express-validator";
 export const createProduct = [
   body("title").notEmpty().withMessage("Title is required"),
   body("desc").notEmpty().withMessage("Description is required"),
-  body("brand").notEmpty().withMessage("Brand is required"),
+  body("brandId").notEmpty().withMessage("Brand is required").isInt({ min: 1 }).withMessage("Brand must be a valid id"),
   body("price").isFloat({ min: 0 }).withMessage("Price must be a valid number"),
   body("categories")
     .isArray({ min: 1 })
@@ -17,7 +17,7 @@ export const updateProduct = [
   param("id").isInt({ min: 1 }).withMessage("Invalid product id"),
   body("title").optional().isString(),
   body("desc").optional().isString(),
-  body("brand").optional().isString(),
+  body("brandId").optional().isInt({ min: 1 }).withMessage("Brand must be a valid id"),
   body("price").optional().isFloat({ min: 0 }),
   body("categoryId").optional().isInt({ min: 1 }),
   body("image").optional(),

@@ -68,8 +68,16 @@ export interface ProductAttributes {
   title: string,
   desc: string,
   price: number,
-  brand: string,
+  brandId: number,
   imgUrl?: string | null,
 }
 
 export interface ProductCreationAttributes extends Omit<ProductAttributes, "id"> { }
+
+export interface BrandAttributes {
+  id: number,
+  name: string,
+  imgUrl?: string | null
+}
+
+export interface BrandCreationAttributes extends Omit<BrandAttributes, "id"> { }
