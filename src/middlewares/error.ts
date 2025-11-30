@@ -75,4 +75,8 @@ export async function validation(req: Request, _: Response, next: NextFunction) 
   next();
 };
 
+export async function RouteNotFound(_: Request, __: Response, next: NextFunction) {
+  next(new ErrorHandler("Route not found", 404));
+}
+
 export default ErrorHandler;
