@@ -16,13 +16,13 @@ export interface UserAttributes {
 
 export interface UserCreationAttributes extends Optional<Omit<UserAttributes, "id" | "createdAt" | "updatedAt">, "gender"> { }
 
-export interface RoleAttributes {
+export interface PermissionAttributes {
   id: number;
   userId: number;
-  role: number;
+  permissions: number;
 }
 
-export interface RoleCreationAttributes extends Optional<Omit<RoleAttributes, "id">, "role"> { }
+export interface PermissionCreationAttributes extends Optional<Omit<PermissionAttributes, "id">, "permissions"> { }
 
 export interface UnverifiedUserAttributes {
   id: number;

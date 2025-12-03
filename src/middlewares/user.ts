@@ -1,5 +1,6 @@
-import { Role } from "../models/role";
+import { Permission } from "../models/permission";
 import { User } from "../models/user";
+import { getClosestRole } from "./auth";
 import ErrorHandler from "./error";
 
 export const findUserById = async (id: number, transaction?: any) => {
@@ -24,9 +25,9 @@ export const findUserByIdWithRole = async (id: number, transaction?: any) => {
   const user = await User.findByPk(id, {
     include: [
       {
-        model: Role,
-        as: "role",
-        attributes: ["role"],
+        model: Permission,
+        as: "permission",
+        attributes: ["permissions"],
       },
     ],
     transaction
@@ -36,10 +37,12 @@ export const findUserByIdWithRole = async (id: number, transaction?: any) => {
     throw new ErrorHandler("User not found", 404);
 
   const json = user.toJSON() as any
+  const role = getClosestRole(json.permission.permissions)
 
   const data = {
     ...json,
-    role: json.role.role
+    permissions: undefined,
+    role
   }
 
   return data;

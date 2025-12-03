@@ -7,6 +7,7 @@ import ErrorHandler, { catchAsyncErrors } from "./error";
 import { isBlacklisted } from "../utils/tokenBlacklist";
 import { User } from "../models/user";
 import { AuthenticatedRequest } from "../types/requests";
+import { ROLES } from "../constants/globals";
 
 export const sendAccountVerificationMessage = async (
   userId: number,
@@ -93,3 +94,71 @@ export const verifyAuthentication = catchAsyncErrors(
     next();
   }
 );
+
+export const verifyAuthenticationHeader = async (
+  req: AuthenticatedRequest,
+  _: Response,
+  next: NextFunction
+) => {
+  try {
+    // التوكن موجود في الهيدر Authorization: Bearer <token>
+    const authHeader = req.headers["authorization"];
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return next(new ErrorHandler("Unauthorized: Token not found", 401));
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    if (isBlacklisted(token)) {
+      return next(new ErrorHandler("Unauthorized: Token expired", 401));
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+
+    const user = await User.findByPk(payload.userId, { attributes: ["id"] });
+    if (!user) {
+      return next(new ErrorHandler("User not found", 401));
+    }
+
+    req.id = user.id;
+
+    next();
+  } catch (err: any) {
+    if (err.name === "JsonWebTokenError" || err.name === "TokenExpiredError") {
+      return next(new ErrorHandler("Unauthorized: Invalid or expired token", 401));
+    }
+    next(err);
+  }
+};
+
+export function hasPermission(userRole: number, permission: number) {
+  return (userRole & permission) !== 0;
+}
+
+export const requirePermission = (permission: number) => {
+  return (_: Request, __: Response, next: NextFunction) => {
+    const role = 0;
+
+    if (!hasPermission(role, permission)) {
+      return next(new ErrorHandler("Not allowed", 403));
+    }
+    next();
+  }
+};
+
+export const getClosestRole = (permissionValue: number) => {
+  const roleEntries = Object.entries(ROLES);
+
+  roleEntries.sort((a, b) => a[1] - b[1]);
+
+  let bestMatch = null;
+
+  for (const [roleName, roleValue] of roleEntries) {
+    if ((permissionValue & roleValue) === roleValue) {
+      bestMatch = roleName;
+    }
+  }
+
+  return bestMatch;
+};
+

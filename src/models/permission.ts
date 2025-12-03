@@ -1,19 +1,19 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import { RoleAttributes, RoleCreationAttributes } from "../types/models";
+import { PermissionAttributes, PermissionCreationAttributes } from "../types/models";
 
-export class Role extends Model<RoleAttributes, RoleCreationAttributes> implements RoleAttributes {
+export class Permission extends Model<PermissionAttributes, PermissionCreationAttributes> implements PermissionAttributes {
   public id!: number;
   public userId!: number;
-  public role!: number;
+  public permissions!: number;
 
   static associate(models: any) {
-    Role.belongsTo(models.User, { foreignKey: "userId", onDelete: "CASCADE" })
-    models.User.hasOne(models.Role, { foreignKey: "userId", onDelete: "CASCADE", as: "role" });
+    Permission.belongsTo(models.User, { foreignKey: "userId", onDelete: "CASCADE" })
+    models.User.hasOne(models.Permission, { foreignKey: "userId", onDelete: "CASCADE", as: "permission" });
   }
 }
 
 export default (sequelize: Sequelize) => {
-  Role.init(
+  Permission.init(
     {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
@@ -26,22 +26,22 @@ export default (sequelize: Sequelize) => {
         references: { model: "users", key: "id" },
         onDelete: "CASCADE",
       },
-      role: {
+      permissions: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
         defaultValue: 0,
         validate: {
           min: 0,
-          max: 15
+          max: 63
         }
       },
     },
     {
       sequelize,
-      tableName: "roles",
+      tableName: "permissions",
       timestamps: true,
     }
   );
 
-  return Role;
+  return Permission;
 };
