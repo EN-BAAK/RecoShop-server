@@ -1,12 +1,13 @@
 import express from "express";
-import { getAllProducts, getProductSettingsById, getProductImage, createProduct, updateProduct, deleteProduct, } from "../controllers/product";
-import { createProduct as createProductValidation, updateProduct as updateProductValidation, productIdParam as productIdParamValidation, } from "../validations/product";
+import { getAllProducts, getProductSettingsById, getProductImage, createProduct, updateProduct, deleteProduct, getProductsByCategory } from "../controllers/product";
+import { createProduct as createProductValidation, updateProduct as updateProductValidation, productIdParam as productIdParamValidation, getProductsByCategory as getProductsByCategoryValidation } from "../validations/product";
 import { validation } from "../middlewares/error";
 import { uploadProductImage } from "../utils/multer";
 
 const router = express.Router();
 
 router.get("/", getAllProducts);
+router.get("/shop", getProductsByCategoryValidation, validation, getProductsByCategory);
 router.get("/settings/:id", productIdParamValidation, validation, getProductSettingsById);
 router.get("/:id/image", productIdParamValidation, validation, getProductImage);
 

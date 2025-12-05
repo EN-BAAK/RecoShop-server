@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, } from "../services/product";
+import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsByCategoryService, } from "../services/product";
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllProducts = catchAsyncErrors(async (_: Request, res: Response) => {
@@ -39,4 +39,15 @@ export const deleteProduct = catchAsyncErrors(async (req: Request, res: Response
   const id = parseInt(req.params.id);
   const result = await deleteProductService(id);
   sendSuccessResponse(res, 200, result.message);
+});
+
+export const getProductsByCategory = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { search, category, limit, offset } = req.query;
+  const products = await getProductsByCategoryService({
+    search: search as string,
+    category: category ? String(category) : undefined,
+    limit: limit ? Number(limit) : undefined,
+    offset: offset ? Number(offset) : undefined,
+  });
+  sendSuccessResponse(res, 200, "Products fetched successfully", products);
 });

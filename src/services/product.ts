@@ -9,6 +9,8 @@ import { findProductById, formatProductResponse } from "../middlewares/product";
 import { isSubCategoriesRelatedToSameCategory } from "../controllers/subCategory";
 import { SubCategory } from "../models/subcategory";
 import { Category } from "../models/category";
+import { Op } from "sequelize";
+import { findCategoryByTitle } from "../middlewares/category";
 
 export const getAllProducts = async () => {
   const products = await Product.findAll({
@@ -157,4 +159,55 @@ export const deleteProduct = async (id: number) => {
   await product.destroy();
 
   return { message: "Product deleted successfully" };
+};
+
+export const getPaginatedProductsWithFiltering = async ({ search, category, limit, offset, }: { search?: string; category?: string; limit?: number; offset?: number; }) => {
+  const where: any = {};
+
+  if (search) {
+    where.title = { [Op.iLike]: `%${search}%` };
+  }
+
+  let categoryId: number | undefined = undefined;
+
+  if (category)
+    categoryId = (await findCategoryByTitle(category)).id;
+
+  const include: any[] = [
+    { model: Brand, as: "brand", attributes: ["name"] },
+    {
+      model: SubCategory,
+      as: "subCategories",
+      attributes: [],
+      through: { attributes: [] },
+      ...(categoryId && {
+        where: { categoryId },
+        required: true,
+      }),
+    },
+  ];
+
+  const products = await Product.findAll({
+    where,
+    include,
+    subQuery: false,
+    limit,
+    offset,
+    attributes: { exclude: ["imgUrl", "createdAt", "updatedAt", "brandId"] },
+    order: [["id", "DESC"]],
+  });
+
+  const result = [];
+  for (const product of products) {
+    const json = product.toJSON() as any;
+
+    result.push({
+      ...json,
+      subCategories: undefined,
+      category: undefined,
+      brand: json.brand.name,
+    });
+  }
+
+  return result;
 };

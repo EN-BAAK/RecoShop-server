@@ -13,3 +13,7 @@ export const updateBrand = [
 export const brandId = [
   param("id").isInt().withMessage("Invalid brand id"),
 ];
+
+export const brandName = [
+  param("name").isString().withMessage("Invalid brand name"),
+];

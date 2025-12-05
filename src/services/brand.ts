@@ -1,5 +1,5 @@
 import path from "path";
-import { findBrandById } from "../middlewares/brand";
+import { findBrandById, findBrandByName } from "../middlewares/brand";
 import ErrorHandler from "../middlewares/error";
 import { Brand } from "../models/brand";
 import fs from "fs";
@@ -17,8 +17,19 @@ export const getBrandById = async (id: number) => {
   return brand
 }
 
-export const getBrandImage = async (id: number) => {
+export const getBrandImageById = async (id: number) => {
   const brand = await findBrandById(id);
+
+  if (!brand.imgUrl) throw new ErrorHandler("Image not found", 404);
+
+  const filePath = path.resolve(brand.imgUrl);
+  if (!fs.existsSync(filePath)) throw new ErrorHandler("Image file missing", 404);
+
+  return filePath;
+};
+
+export const getBrandImageByName = async (name: string) => {
+  const brand = await findBrandByName(name);
 
   if (!brand.imgUrl) throw new ErrorHandler("Image not found", 404);
 

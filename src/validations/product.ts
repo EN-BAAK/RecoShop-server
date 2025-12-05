@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 
 export const createProduct = [
   body("title").notEmpty().withMessage("Title is required"),
@@ -26,4 +26,11 @@ export const updateProduct = [
 
 export const productIdParam = [
   param("id").isInt({ min: 1 }).withMessage("Invalid product id"),
+];
+
+export const getProductsByCategory = [
+  query("search").optional().isString(),
+  query("category").optional().isString(),
+  query("limit").optional().isInt({ min: 1 }).withMessage("Limit must be a positive integer"),
+  query("offset").optional().isInt({ min: 0 }).withMessage("Offset must be a non-negative integer"),
 ];

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllBrands as getAllBrandsService, getBrandById as getBrandByIdService, createBrand as createBrandService, updateBrand as updateBrandService, deleteBrandById as deleteBrandByIdService, getBrandImage as getBrandImageByIdService } from "../services/brand"
+import { getAllBrands as getAllBrandsService, getBrandById as getBrandByIdService, createBrand as createBrandService, updateBrand as updateBrandService, deleteBrandById as deleteBrandByIdService, getBrandImageById as getBrandImageByIdService, getBrandImageByName as getBrandImageByNameService } from "../services/brand"
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllBrands = catchAsyncErrors(async (_: Request, res: Response) => {
@@ -14,9 +14,15 @@ export const getBrandById = catchAsyncErrors(async (req: Request, res: Response)
   sendSuccessResponse(res, 200, "Brand fetched successfully", brand);
 });
 
-export const getBrandImage = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getBrandImageById = catchAsyncErrors(async (req: Request, res: Response) => {
   const { id } = req.params;
   const brandImage = await getBrandImageByIdService(parseInt(id));
+  res.sendFile(brandImage);
+});
+
+export const getBrandImageByName = catchAsyncErrors(async (req: Request, res: Response) => {
+  const { name } = req.params;
+  const brandImage = await getBrandImageByNameService(String(name));
   res.sendFile(brandImage);
 });
 

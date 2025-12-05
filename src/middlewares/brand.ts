@@ -9,3 +9,12 @@ export const findBrandById = async (id: number) => {
 
   return brand
 }
+
+export const findBrandByName = async (name: string) => {
+  const brand = await Brand.findOne({ where: { name }, attributes: { include: ["imgUrl"] } })
+
+  if (!brand)
+    throw new ErrorHandler("brand not found", 404)
+
+  return brand
+}
