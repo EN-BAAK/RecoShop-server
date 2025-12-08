@@ -12,6 +12,13 @@ export const getAllBrands = async () => {
   });
 };
 
+export const getAllBrandsIdentities = async () => {
+  return Brand.findAll({
+    order: [["id", "DESC"]],
+    attributes: ["id", "title"],
+  });
+};
+
 export const getBrandById = async (id: number) => {
   const brand = findBrandById(id)
   return brand

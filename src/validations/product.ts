@@ -1,5 +1,11 @@
 import { body, param, query } from "express-validator";
 
+export const getAllProductsValidation = [
+  query("limit").optional().isInt({ min: 1 }).withMessage("Limit must be a positive integer"),
+  query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
+  query("offsetUnit").optional().isInt({ min: 0 }).withMessage("offsetUnit must be a non-negative integer"),
+];
+
 export const createProduct = [
   body("title").notEmpty().withMessage("Title is required"),
   body("desc").notEmpty().withMessage("Description is required"),

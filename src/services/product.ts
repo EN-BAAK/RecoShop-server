@@ -12,8 +12,18 @@ import { Category } from "../models/category";
 import { Op } from "sequelize";
 import { findCategoryByTitle } from "../middlewares/category";
 
-export const getAllProducts = async () => {
-  const products = await Product.findAll({
+export const getAllProducts = async (options?: { limit?: number; page?: number; offsetUnit?: number }) => {
+  let { limit, page, offsetUnit } = options || {};
+  limit = limit && limit > 0 ? limit : undefined;
+  page = page && page > 0 ? page : 1;
+  offsetUnit = offsetUnit && offsetUnit > 0 ? offsetUnit : 0;
+
+  let offset = 0;
+  if (limit) {
+    offset = ((page - 1) * limit) + offsetUnit;
+  }
+
+  const { count, rows: products } = await Product.findAndCountAll({
     attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     order: [["id", "DESC"]],
     include: [
@@ -25,15 +35,24 @@ export const getAllProducts = async () => {
         through: { attributes: [] },
       },
     ],
+    ...(limit ? { limit } : {}),
+    ...(limit ? { offset } : {}),
+    distinct: true,
   });
 
   const result = [];
-
   for (const product of products) {
     result.push(await formatProductResponse(product));
   }
 
-  return result;
+  const totalPages = limit ? Math.ceil(count / limit) : 1;
+
+  return {
+    products: result,
+    totalPages,
+    currentPage: page,
+    totalCount: count,
+  };
 };
 
 export const getProductSettingsById = async (id: number) => {

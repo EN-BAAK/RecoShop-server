@@ -8,6 +8,7 @@ import { isBlacklisted } from "../utils/tokenBlacklist";
 import { User } from "../models/user";
 import { AuthenticatedRequest } from "../types/requests";
 import { ROLES } from "../constants/globals";
+import { Permission } from "../models/permission";
 
 export const sendAccountVerificationMessage = async (
   userId: number,
@@ -101,7 +102,6 @@ export const verifyAuthenticationHeader = async (
   next: NextFunction
 ) => {
   try {
-    // التوكن موجود في الهيدر Authorization: Bearer <token>
     const authHeader = req.headers["authorization"];
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return next(new ErrorHandler("Unauthorized: Token not found", 401));
@@ -135,16 +135,21 @@ export function hasPermission(userRole: number, permission: number) {
   return (userRole & permission) !== 0;
 }
 
-export const requirePermission = (permission: number) => {
-  return (_: Request, __: Response, next: NextFunction) => {
-    const role = 0;
+export const requirePermission = (requiredPermission: number) => {
+  return catchAsyncErrors(async (req: AuthenticatedRequest, __: Response, next: NextFunction) => {
+    const userId = req.id!;
 
-    if (!hasPermission(role, permission)) {
+    const permissions = await Permission.findOne({ where: { userId } })
+
+    if (!permissions)
+      return next(new ErrorHandler("Not allowed", 403))
+
+    if (!hasPermission(permissions?.permissions, requiredPermission)) {
       return next(new ErrorHandler("Not allowed", 403));
     }
     next();
-  }
-};
+  })
+}
 
 export const getClosestRole = (permissionValue: number) => {
   const roleEntries = Object.entries(ROLES);

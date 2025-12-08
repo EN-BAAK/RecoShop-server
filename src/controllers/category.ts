@@ -6,12 +6,18 @@ import {
   createCategory as createCategoryService,
   updateCategory as updateCategoryService,
   deleteCategoryById as deleteCategoryByIdService,
-  getAllCategoriesWithSubCategory as getAllCategoriesWithSubCategoryService
+  getAllCategoriesWithSubCategory as getAllCategoriesWithSubCategoryService,
+  getCategoriesIdentities as getCategoriesIdentitiesService
 } from "../services/category";
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllCategories = catchAsyncErrors(async (_: Request, res: Response) => {
   const categories = await getCategoriesService();
+  sendSuccessResponse(res, 200, "Categories fetched successfully", categories);
+});
+
+export const getAllCategoriesIdentities = catchAsyncErrors(async (_: Request, res: Response) => {
+  const categories = await getCategoriesIdentitiesService();
   sendSuccessResponse(res, 200, "Categories fetched successfully", categories);
 });
 

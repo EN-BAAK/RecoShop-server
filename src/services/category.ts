@@ -9,6 +9,13 @@ export const getCategories = async () => {
   });
 };
 
+export const getCategoriesIdentities = async () => {
+  return Category.findAll({
+    order: [["id", "DESC"]],
+    attributes: ["id", "title"]
+  });
+};
+
 export const getAllCategoriesWithSubCategory = async () => {
   return Category.findAll({
     include: [

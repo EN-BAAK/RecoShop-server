@@ -20,13 +20,6 @@ export enum GOVERNORATE {
   QUNEITRA = "Quneitra",
 }
 
-export enum PERMISSION {
-  VIEW = 1 << 0,
-  ADD = 1 << 1,
-  EDIT = 1 << 2,
-  DELETE = 1 << 3,
-}
-
 export type BlacklistedToken = {
   token: string;
   expiresAt: number;

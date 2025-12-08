@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllBrands as getAllBrandsService, getBrandById as getBrandByIdService, createBrand as createBrandService, updateBrand as updateBrandService, deleteBrandById as deleteBrandByIdService, getBrandImageById as getBrandImageByIdService, getBrandImageByName as getBrandImageByNameService } from "../services/brand"
+import { getAllBrands as getAllBrandsService, getBrandById as getBrandByIdService, createBrand as createBrandService, updateBrand as updateBrandService, deleteBrandById as deleteBrandByIdService, getBrandImageById as getBrandImageByIdService, getBrandImageByName as getBrandImageByNameService, getAllBrandsIdentities as getAllBrandsIdentitiesService } from "../services/brand"
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllBrands = catchAsyncErrors(async (_: Request, res: Response) => {
   const brands = await getAllBrandsService();
+  sendSuccessResponse(res, 200, "Brands fetched successfully", brands);
+});
+
+export const getAllBrandsIdentities = catchAsyncErrors(async (_: Request, res: Response) => {
+  const brands = await getAllBrandsIdentitiesService();
   sendSuccessResponse(res, 200, "Brands fetched successfully", brands);
 });
 
