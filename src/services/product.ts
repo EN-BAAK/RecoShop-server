@@ -184,7 +184,7 @@ export const getPaginatedProductsWithFiltering = async ({ search, category, limi
   const where: any = {};
 
   if (search) {
-    where.title = { [Op.iLike]: `%${search}%` };
+    where.title = { [Op.like]: `%${search}%` };
   }
 
   let categoryId: number | undefined = undefined;
@@ -227,6 +227,7 @@ export const getPaginatedProductsWithFiltering = async ({ search, category, limi
       brand: json.brand.name,
     });
   }
+
 
   return result;
 };

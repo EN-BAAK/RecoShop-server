@@ -47,6 +47,7 @@ export const deleteProduct = catchAsyncErrors(async (req: Request, res: Response
 
 export const getProductsPaginatedWithFiltering = catchAsyncErrors(async (req: Request, res: Response) => {
   const { search, category, limit, offset } = req.query;
+
   const products = await getProductsPaginatedWithFilteringService({
     search: search as string,
     category: category ? String(category) : undefined,
