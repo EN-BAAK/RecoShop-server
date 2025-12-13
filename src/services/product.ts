@@ -23,7 +23,7 @@ export const getAllProducts = async (options?: { limit?: number; page?: number; 
     offset = ((page - 1) * limit) + offsetUnit;
   }
 
-  const { count, rows: products } = await Product.findAndCountAll({
+  const { count, rows } = await Product.findAndCountAll({
     attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     order: [["id", "DESC"]],
     include: [
@@ -40,18 +40,16 @@ export const getAllProducts = async (options?: { limit?: number; page?: number; 
     distinct: true,
   });
 
-  const result = [];
-  for (const product of products) {
-    result.push(await formatProductResponse(product));
+  const formattedProducts = [];
+  for (const product of rows) {
+    formattedProducts.push(await formatProductResponse(product));
   }
 
-  const totalPages = limit ? Math.ceil(count / limit) : 1;
-
   return {
-    products: result,
-    totalPages,
-    currentPage: page,
+    products: formattedProducts,
     totalCount: count,
+    totalPages: limit ? Math.ceil(count / limit) : 1,
+    currentPage: page,
   };
 };
 
@@ -59,7 +57,6 @@ export const getProductSettingsById = async (id: number) => {
   const product = await Product.findByPk(id, {
     attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     include: [
-      { model: Brand, as: "brand", attributes: ["id", "name"] },
       {
         model: SubCategory,
         as: "subCategories",
@@ -83,12 +80,8 @@ export const getProductSettingsById = async (id: number) => {
 
   const cleanSubCats = subCats.map((sc: any) => (String(sc.id)));
 
-  const brand = await findBrandById(product.brandId);
-
   return {
     ...json,
-    brandId: undefined,
-    brand: brand.name,
     subCategories: undefined,
     category: category?.title,
     categories: cleanSubCats,

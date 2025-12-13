@@ -13,10 +13,13 @@ export const getAllBrands = async () => {
 };
 
 export const getAllBrandsIdentities = async () => {
-  return Brand.findAll({
+  const brands = await Brand.findAll({
     order: [["id", "DESC"]],
-    attributes: ["id", "title"],
+    attributes: ["id", "name"],
   });
+
+  brands.map(b => b.toJSON())
+  return brands
 };
 
 export const getBrandById = async (id: number) => {

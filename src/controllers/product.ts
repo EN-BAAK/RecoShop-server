@@ -5,13 +5,25 @@ import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllProducts = catchAsyncErrors(async (req: Request, res: Response) => {
   const { limit, page, offsetUnit } = req.query;
-  const productsData = await getAllProductsService({
+
+  const result = await getAllProductsService({
     limit: limit ? Number(limit) : undefined,
     page: page ? Number(page) : undefined,
     offsetUnit: offsetUnit ? Number(offsetUnit) : undefined,
   });
-  sendSuccessResponse(res, 200, "Products fetched successfully", productsData);
+
+  return sendSuccessResponse(res, 200, "Products fetched successfully", {
+    items: result.products,
+    page: result.currentPage,
+    limit: limit ? Number(limit) : undefined,
+    total: result.totalCount,
+    totalPages: result.totalPages,
+    hasMore: result.currentPage < result.totalPages,
+    nextPage: result.currentPage < result.totalPages ? result.currentPage + 1 : null,
+    prevPage: result.currentPage > 1 ? result.currentPage - 1 : null,
+  });
 });
+
 export const getProductSettingsById = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   const product = await getProductSettingsByIdService(id);
