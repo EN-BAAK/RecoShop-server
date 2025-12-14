@@ -88,6 +88,29 @@ export const getProductSettingsById = async (id: number) => {
   };
 };
 
+export const getProductById = async (id: number) => {
+  const product = await Product.findByPk(id, {
+    attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
+    include: [
+      {
+        model: SubCategory,
+        as: "subCategories",
+        attributes: ["id", "title", "categoryId"],
+        through: { attributes: [] },
+      },
+      {
+        model: Brand,
+        as: "brand",
+        attributes: ["name"],
+      }
+    ],
+  });
+
+  if (!product) throw new ErrorHandler("Product not found", 404);
+
+  return await formatProductResponse(product)
+};
+
 export const getProductImage = async (id: number) => {
   const product = await findProductById(id);
 

@@ -24,3 +24,10 @@ export type BlacklistedToken = {
   token: string;
   expiresAt: number;
 };
+
+export enum WALLET_TRANSACTION {
+  DEPOSIT = "deposit",
+  WITHDRAW = "withdraw",
+  PURCHASE = "purchase",
+  REFUND = "refund",
+}

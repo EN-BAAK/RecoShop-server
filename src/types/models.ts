@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { GOVERNORATE, SEX } from "./vars";
+import { GOVERNORATE, SEX, WALLET_TRANSACTION } from "./vars";
 
 export interface UserAttributes {
   id: number;
@@ -81,3 +81,24 @@ export interface BrandAttributes {
 }
 
 export interface BrandCreationAttributes extends Omit<BrandAttributes, "id"> { }
+
+export interface WalletAttributes {
+  id: number,
+  userId: number,
+  balance: number,
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface WalletCreationAttributes extends Omit<WalletAttributes, "id" | "createdAt" | "updatedAt"> { }
+
+export interface WalletTransactionAttributes {
+  id: number,
+  walletId: number,
+  amount: number,
+  type: WALLET_TRANSACTION
+  reason?: string
+  createdAt?: Date;
+}
+
+export interface WalletTransactionCreationAttributes extends Omit<WalletTransactionAttributes, "id" | "createdAt"> { }
