@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsPaginatedWithFilteringService, getProductById as getProductByIdService } from "../services/product";
+import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsPaginatedWithFilteringService, getProductById as getProductByIdService, getRelatedProducts as getRelatedProductsService } from "../services/product";
 import { sendSuccessResponse } from "../middlewares/success";
 
 export const getAllProducts = catchAsyncErrors(async (req: Request, res: Response) => {
@@ -64,13 +64,21 @@ export const deleteProduct = catchAsyncErrors(async (req: Request, res: Response
 });
 
 export const getProductsPaginatedWithFiltering = catchAsyncErrors(async (req: Request, res: Response) => {
-  const { search, category, limit, offset } = req.query;
+  const { search, category, limit, page } = req.query;
 
   const products = await getProductsPaginatedWithFilteringService({
     search: search as string,
     category: category ? String(category) : undefined,
     limit: limit ? Number(limit) : undefined,
-    offset: offset ? Number(offset) : undefined,
+    page: Number(page)
   });
+
   sendSuccessResponse(res, 200, "Products fetched successfully", products);
 });
+
+export const getRelatedProducts = catchAsyncErrors(async (req: Request, res: Response) => {
+  const productId = parseInt(req.params.id)
+  const products = await getRelatedProductsService(productId);
+
+  sendSuccessResponse(res, 200, "Products fetched successfully", products);
+})

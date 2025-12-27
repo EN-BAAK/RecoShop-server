@@ -38,5 +38,5 @@ export const getProductsByCategory = [
   query("search").optional().isString(),
   query("category").optional().isString(),
   query("limit").optional().isInt({ min: 1 }).withMessage("Limit must be a positive integer"),
-  query("offset").optional().isInt({ min: 0 }).withMessage("Offset must be a non-negative integer"),
+  query("page").optional().isInt({ min: 0 }).withMessage("page must be a non-negative integer"),
 ];

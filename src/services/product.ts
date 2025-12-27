@@ -196,54 +196,97 @@ export const deleteProduct = async (id: number) => {
   return { message: "Product deleted successfully" };
 };
 
-export const getPaginatedProductsWithFiltering = async ({ search, category, limit, offset, }: { search?: string; category?: string; limit?: number; offset?: number; }) => {
+export const getPaginatedProductsWithFiltering = async ({ search, category, limit, page = 1, }: { search?: string; category?: string; limit?: number; page?: number; }) => {
   const where: any = {};
 
   if (search) {
     where.title = { [Op.like]: `%${search}%` };
   }
 
-  let categoryId: number | undefined = undefined;
+  let categoryId: number | undefined;
 
-  if (category)
-    categoryId = (await findCategoryByTitle(category)).id;
+  if (category) {
+    const cat = await findCategoryByTitle(category);
+    categoryId = cat?.id;
+  }
+  const offset = limit && limit > 0 ? (page - 1) * limit : undefined;
 
-  const include: any[] = [
-    { model: Brand, as: "brand", attributes: ["name"] },
-    {
-      model: SubCategory,
-      as: "subCategories",
-      attributes: [],
-      through: { attributes: [] },
-      ...(categoryId && {
-        where: { categoryId },
-        required: true,
-      }),
-    },
-  ];
-
-  const products = await Product.findAll({
+  const { count, rows: products } = await Product.findAndCountAll({
     where,
-    include,
-    subQuery: false,
-    limit,
-    offset,
-    attributes: { exclude: ["imgUrl", "createdAt", "updatedAt", "brandId"] },
+    include: [
+      { model: Brand, as: "brand", attributes: ["name"] },
+      {
+        model: SubCategory,
+        as: "subCategories",
+        attributes: [],
+        through: { attributes: [] },
+        ...(categoryId && { where: { categoryId }, required: true }),
+      },
+    ],
+    attributes: { exclude: ["imgUrl", "createdAt", "updatedAt"] },
     order: [["id", "DESC"]],
+    ...(limit ? { limit, offset } : {}),
+    distinct: true,
   });
 
-  const result = [];
-  for (const product of products) {
+  const formattedProducts = products.map((product) => {
     const json = product.toJSON() as any;
-
-    result.push({
+    return {
       ...json,
       subCategories: undefined,
       category: undefined,
       brand: json.brand.name,
-    });
+    };
+  });
+
+  return {
+    products: formattedProducts,
+    totalCount: count,
+    totalPages: limit ? Math.ceil(count / limit) : 1,
+    currentPage: page,
+  };
+};
+
+export const getRelatedProducts = async (id: number) => {
+  const product = await Product.findByPk(id, {
+    attributes: ["id"],
+    include: [
+      {
+        model: SubCategory,
+        as: "subCategories",
+        attributes: ["categoryId"],
+      },
+    ],
+  });
+
+  if (!product) throw new ErrorHandler("Product not found", 404);
+
+  const subCategories = (product.toJSON() as any).subCategories || [];
+  if (subCategories.length === 0) return [];
+
+  const categoryId = subCategories[0].categoryId;
+
+  const relatedProducts = await Product.findAll({
+    include: [
+      {
+        model: SubCategory,
+        as: "subCategories",
+        attributes: [],
+        through: { attributes: [] },
+        where: { categoryId },
+        required: true,
+      },
+      { model: Brand, as: "brand", attributes: ["name"] },
+    ],
+    where: { id: { [Op.ne]: id } },
+    limit: 5,
+    order: [["id", "DESC"]],
+  });
+
+  const formattedProducts = [];
+  for (const p of relatedProducts) {
+    formattedProducts.push(await formatProductResponse(p));
   }
 
-
-  return result;
+  return formattedProducts;
 };

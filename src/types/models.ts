@@ -102,3 +102,23 @@ export interface WalletTransactionAttributes {
 }
 
 export interface WalletTransactionCreationAttributes extends Omit<WalletTransactionAttributes, "id" | "createdAt"> { }
+
+export interface BillAttributes {
+  id: number,
+  walletTransactionId: number,
+}
+
+export interface BillCreationAttributes extends Omit<BillAttributes, "id"> { }
+
+export interface BillProductAttributes {
+  id: number,
+  billId: number,
+  productId?: number,
+  quantity: number
+}
+
+export interface BillProductCreationAttributes {
+  billId: number,
+  productId?: number,
+  quantity: number
+}

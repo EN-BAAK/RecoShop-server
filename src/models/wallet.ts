@@ -1,9 +1,7 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { WalletAttributes, WalletCreationAttributes } from "../types/models";
 
-export class Wallet
-  extends Model<WalletAttributes, WalletCreationAttributes>
-  implements WalletAttributes {
+export class Wallet extends Model<WalletAttributes, WalletCreationAttributes> implements WalletAttributes {
 
   public id!: number;
   public userId!: number;
@@ -26,12 +24,6 @@ export class Wallet
     models.User.hasOne(Wallet, {
       foreignKey: "userId",
       as: "wallet",
-      onDelete: "CASCADE",
-    });
-
-    Wallet.hasMany(models.WalletTransaction, {
-      foreignKey: "walletId",
-      as: "transactions",
       onDelete: "CASCADE",
     });
   }

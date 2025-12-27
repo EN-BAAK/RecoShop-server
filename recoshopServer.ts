@@ -14,6 +14,7 @@ import CategoryRouter from "./src/routers/category"
 import ProductRouter from "./src/routers/product"
 import BrandRouter from "./src/routers/brand"
 import UserRouter from "./src/routers/user"
+import BillRouter from "./src/routers/bill"
 
 const app = express()
 
@@ -33,6 +34,7 @@ app.use("/api/v0/sub-categories", SubCategoryRouter)
 app.use("/api/v0/categories", CategoryRouter)
 app.use("/api/v0/products", ProductRouter)
 app.use("/api/v0/brands", BrandRouter)
+app.use("/api/v0/bills", BillRouter)
 app.use("/api", RouteNotFound)
 
 
