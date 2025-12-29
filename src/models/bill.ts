@@ -6,6 +6,11 @@ export class Bill extends Model<BillAttributes, BillCreationAttributes> implemen
   public walletTransactionId!: number;
   public readonly createdAt!: Date;
 
+  public toJSON(): object {
+    const values: Partial<BillAttributes> = { ...this.get() };
+    return values;
+  }
+
   static associate(models: any) {
     Bill.belongsTo(models.WalletTransaction, {
       foreignKey: "walletTransactionId",
@@ -13,9 +18,9 @@ export class Bill extends Model<BillAttributes, BillCreationAttributes> implemen
       onDelete: "CASCADE",
     });
 
-    models.WalletTransaction.hasOne(models.WalletTransaction, {
+    models.WalletTransaction.hasOne(models.Bill, {
       foreignKey: "walletTransactionId",
-      as: "transaction",
+      as: "bill",
       onDelete: "CASCADE",
     });
   }

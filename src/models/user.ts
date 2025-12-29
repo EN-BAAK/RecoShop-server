@@ -56,15 +56,25 @@ export default (sequelize: Sequelize) => {
             user.password = await hashPassword(user.password);
           }
         },
-        afterCreate: async (user: User) => {
+        afterCreate: async (user: User, options) => {
           const sequelize = user.sequelize;
           if (!sequelize) return;
 
           const Wallet = sequelize.models.Wallet;
+          const Permission = sequelize.models.Permission;
+
+          await Permission.create({
+            userId: user.id,
+            permissions: 0,
+          }, {
+            transaction: options.transaction,
+          });
 
           await Wallet.create({
             userId: user.id,
-            balance: 0,
+            balance: 999999,
+          }, {
+            transaction: options.transaction,
           });
         },
       },

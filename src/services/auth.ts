@@ -22,7 +22,6 @@ export const signup = async (data: UserCreationAttributes, transaction: any) => 
   }
 
   const createdUser = await User.create(data, { transaction });
-
   return await sendAccountVerificationMessage(createdUser.id, createdUser.email, undefined, transaction);
 };
 

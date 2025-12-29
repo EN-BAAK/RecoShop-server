@@ -5,8 +5,9 @@ import { WalletTransaction } from "../models/walletTransaction";
 import { Bill } from "../models/bill";
 import { BillProduct } from "../models/billProduct";
 import { WALLET_TRANSACTION } from "../types/vars";
-import { findWalletByUserId } from "../middlewares/bill";
+import { findWalletByUserId } from "../middlewares/wallet";
 import { Op } from "sequelize";
+import { Wallet } from "../models/wallet";
 
 export const purchaseProducts = async (
   userId: number,
@@ -70,37 +71,80 @@ export const purchaseProducts = async (
   })
 }
 
-export const getUserBills = async (userId: number, startDate?: string, endDate?: string) => {
-  const where: any = { userId };
+export const getUserBills = async (
+  userId: number,
+  startDate?: string,
+  endDate?: string
+) => {
+  const transactionWhere: any = {};
 
   if (startDate && endDate) {
-    where.createdAt = { [Op.between]: [startDate, endDate] };
+    transactionWhere.createdAt = {
+      [Op.between]: [startDate, endDate],
+    };
   } else if (startDate) {
-    where.createdAt = { [Op.gte]: startDate };
+    transactionWhere.createdAt = {
+      [Op.gte]: startDate,
+    };
   } else if (endDate) {
-    where.createdAt = { [Op.lte]: endDate };
+    transactionWhere.createdAt = {
+      [Op.lte]: endDate,
+    };
   }
 
-  return Bill.findAll({
-    where,
+  const wallet = await Wallet.findOne({
+    where: { userId },
+    attributes: [],
     include: [
       {
         model: WalletTransaction,
-        as: "transaction",
-        attributes: ["amount", "type", "createdAt"],
-      },
-      {
-        model: BillProduct,
-        as: "items",
+        as: "transactions",
+        where: transactionWhere,
+        required: true,
+        attributes: ["id", "amount", "createdAt"],
         include: [
           {
-            model: Product,
-            as: "product",
-            attributes: ["id", "title", "price"],
+            model: Bill,
+            as: "bill",
+            attributes: { exclude: ["walletTransactionId", "createdAt"] },
+            include: [
+              {
+                model: BillProduct,
+                as: "items",
+                attributes: ["id", "quantity"],
+                include: [
+                  {
+                    model: Product,
+                    as: "product",
+                    attributes: ["id", "title", "price"],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
     ],
-    order: [["createdAt", "DESC"]],
+    order: [[{ model: WalletTransaction, as: "transactions" }, "createdAt", "DESC"]],
   });
+
+  const walletJson = wallet?.toJSON() as any;
+
+  const transactions =
+    walletJson?.transactions.map((tx: any) => ({
+      id: tx.id,
+      amount: tx.amount,
+      createdAt: tx.createdAt,
+      products: tx.bill
+        ? tx.bill.items.map((item: any) => ({
+          id: item.product.id,
+          title: item.product.title,
+          price: item.product.price,
+          quantity: item.quantity,
+        }))
+        : [],
+    })) ?? [];
+
+
+  return transactions
 };
