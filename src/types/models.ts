@@ -122,3 +122,33 @@ export interface BillProductCreationAttributes {
   productId?: number,
   quantity: number
 }
+
+export interface ReviewAttributes {
+  id: number,
+  userId: number,
+  productId: number,
+  createdAt?: Date
+}
+
+export interface ReviewCreationAttributes extends Omit<ReviewAttributes, "id" | "createdAt"> { }
+
+export interface CommentAttributes {
+  id: number;
+  userId: number;
+  productId: number;
+  comment: string;
+  createdAt?: Date;
+}
+
+export interface CommentCreationAttributes
+  extends Omit<CommentAttributes, "id" | "createdAt"> { }
+
+export interface RateAttributes {
+  id: number;
+  userId: number;
+  productId: number;
+  rate: number;
+}
+
+export interface RateCreationAttributes
+  extends Omit<RateAttributes, "id"> { }

@@ -16,6 +16,9 @@ import BrandRouter from "./src/routers/brand"
 import UserRouter from "./src/routers/user"
 import BillRouter from "./src/routers/bill"
 import DashboardRouter from "./src/routers/dashboard"
+import RateRouter from "./src/routers/rate"
+import ReviewRouter from "./src/routers/review"
+import CommentRouter from "./src/routers/comment"
 
 const app = express()
 
@@ -37,6 +40,9 @@ app.use("/api/v0/products", ProductRouter)
 app.use("/api/v0/brands", BrandRouter)
 app.use("/api/v0/bills", BillRouter)
 app.use("/api/v0/dashboard", DashboardRouter)
+app.use("/api/v0/rates", RateRouter)
+app.use("/api/v0/reviews", ReviewRouter)
+app.use("/api/v0/comments", CommentRouter)
 app.use("/api", RouteNotFound)
 
 app.use(error)
