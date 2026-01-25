@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { ResetPasswordRequest } from "../models/resetPasswordRequest";
 import { UnverifiedUser } from "../models/unverifiedUser";
 import { generateVerificationCode } from "../utils/encrypt";
@@ -96,6 +96,32 @@ export const verifyAuthentication = catchAsyncErrors(
   }
 );
 
+export const getAuthenticatedUserId = async (
+  req: Request
+): Promise<number | null> => {
+  try {
+    const token = req.cookies?.[process.env.COOKIE_NAME!];
+    if (!token) return null;
+
+    if (isBlacklisted(token)) return null;
+
+    const payload = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    ) as { userId: number };
+
+    const user = await User.findByPk(payload.userId, {
+      attributes: ["id"],
+    });
+
+    if (!user) return null;
+
+    return user.id;
+  } catch {
+    return null;
+  }
+};
+
 export const verifyAuthenticationHeader = async (
   req: AuthenticatedRequest,
   _: Response,
@@ -151,12 +177,12 @@ export const requirePermission = (requiredPermission: number) => {
   })
 }
 
-export const getClosestRole = (permissionValue: number) => {
+export const getClosestRole = (permissionValue: number): string => {
   const roleEntries = Object.entries(ROLES);
 
   roleEntries.sort((a, b) => a[1] - b[1]);
 
-  let bestMatch = null;
+  let bestMatch: string = "CUSTOMER";
 
   for (const [roleName, roleValue] of roleEntries) {
     if ((permissionValue & roleValue) === roleValue) {

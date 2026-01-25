@@ -70,3 +70,19 @@ export const login = [
     .notEmpty().withMessage("Password is required")
     .isString().withMessage("Password must be a string")
 ]
+
+export const resetPassword = [
+  body("oldPassword")
+    .notEmpty()
+    .withMessage("Old password is required")
+    .isString()
+    .withMessage("Old password must be a string"),
+
+  body("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isString()
+    .withMessage("New password must be a string")
+    .isLength({ min: 6 })
+    .withMessage("New password must be at least 6 characters"),
+];

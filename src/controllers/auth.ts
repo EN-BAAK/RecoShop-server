@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { signup as signupService, resetVerificationCode as resetVerificationCodeService, verifyAccount as verifyAccountService, forgotPassword as forgotPasswordService, resetForgottenPassword as resetForgottenPasswordService, login as loginService, verify as verifyService } from "../services/auth";
+import { signup as signupService, resetVerificationCode as resetVerificationCodeService, verifyAccount as verifyAccountService, forgotPassword as forgotPasswordService, resetForgottenPassword as resetForgottenPasswordService, login as loginService, verify as verifyService, resetPassword as resetPasswordService } from "../services/auth";
 import { sendSuccessResponse } from "../middlewares/success";
 import { forgotPasswordMessage, sendEmail, verifyAccountMessage } from "../utils/mail";
 import db from "../models";
@@ -120,3 +120,12 @@ export const verify = catchAsyncErrors(async (req: AuthenticatedRequest, res: Re
   const result = await verifyService(userId);
   sendSuccessResponse(res, 200, "Verified", result)
 })
+
+export const resetPassword = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.id!;
+  const { oldPassword, newPassword } = req.body;
+
+  await resetPasswordService(userId, oldPassword, newPassword);
+
+  sendSuccessResponse(res, 200, "Password reset successfully");
+});

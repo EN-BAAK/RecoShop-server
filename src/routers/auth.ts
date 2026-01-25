@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { checkEmailParam, login as loginValidation, resetForgottenPassword as resetForgottenPasswordValidation, signup as signupValidation, verifyAccount as verifyAccountValidation } from "../validations/auth";
-import { signup, resetVerificationCode, verifyAccount, logout, forgotPassword, resetForgottenPassword, login, verify } from "../controllers/auth";
+import { checkEmailParam, login as loginValidation, resetForgottenPassword as resetForgottenPasswordValidation, signup as signupValidation, verifyAccount as verifyAccountValidation, resetPassword as resetPasswordValidation } from "../validations/auth";
+import { signup, resetVerificationCode, verifyAccount, logout, forgotPassword, resetForgottenPassword, login, verify, resetPassword } from "../controllers/auth";
 import { validation } from "../middlewares/error";
 import { verifyAuthentication, verifyAuthenticationHeader } from "../middlewares/auth";
 
@@ -17,6 +17,8 @@ router.post("/verify-account/:email", verifyAccountValidation, validation, verif
 
 router.post("/resend-verification-code/:email", checkEmailParam, validation, resetVerificationCode);
 router.post("/forgot-password/:email", checkEmailParam, validation, forgotPassword)
+
+router.post("/reset-password", verifyAuthentication, resetPasswordValidation, validation, resetPassword);
 
 router.put("/reset-forgotten-password/:email", resetForgottenPasswordValidation, validation, resetForgottenPassword)
 

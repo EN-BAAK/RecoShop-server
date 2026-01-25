@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import ErrorHandler from "../middlewares/error";
-import { findUserByEmail, findUserByIdWithRole } from "../middlewares/user";
+import { findUserByEmail, findUserById, findUserByIdWithRole } from "../middlewares/user";
 import { UserCreationAttributes } from "../types/models";
 import { User } from "../models/user";
 import { sendAccountVerificationMessage, sendForgotPasswordVerificationCode } from "../middlewares/auth";
@@ -90,4 +90,18 @@ export const login = async (email: string, password: string) => {
 export const verify = async (userId: number) => {
   const userInfo = await findUserByIdWithRole(userId);
   return { ...userInfo };
+};
+
+export const resetPassword = async (userId: number, oldPassword: string, newPassword: string) => {
+  const user = await findUserById(userId);
+
+  const isMatch = await user.checkPassword(oldPassword);
+  if (!isMatch) {
+    throw new ErrorHandler("Password is incorrect", 401);
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  return { message: "Password updated successfully" };
 };

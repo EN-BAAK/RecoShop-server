@@ -14,3 +14,7 @@ export const getUserById = [
 export const deleteUser = [
   param("id").isInt({ min: 1 }).withMessage("Invalid user ID"),
 ];
+
+export const getUserProfile = [
+  param("id").isInt({ min: 1 }).withMessage("Invalid user ID"),
+]

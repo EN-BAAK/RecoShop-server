@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
 import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsPaginatedWithFilteringService, getProductById as getProductByIdService, getRelatedProducts as getRelatedProductsService } from "../services/product";
 import { sendSuccessResponse } from "../middlewares/success";
+import { getAuthenticatedUserId } from "../middlewares/auth";
+import { addReview } from "../services/review";
 
 export const getAllProducts = catchAsyncErrors(async (req: Request, res: Response) => {
   const { limit, page, offsetUnit } = req.query;
@@ -32,7 +34,10 @@ export const getProductSettingsById = catchAsyncErrors(async (req: Request, res:
 
 export const getProductById = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
+  const userId = await getAuthenticatedUserId(req)
+
   const product = await getProductByIdService(id);
+  await addReview({ userId, productId: product.id })
   sendSuccessResponse(res, 200, "Product fetched successfully", product);
 });
 
