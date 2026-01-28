@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
-import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsPaginatedWithFilteringService, getProductById as getProductByIdService, getRelatedProducts as getRelatedProductsService } from "../services/product";
+import { getAllProducts as getAllProductsService, getProductSettingsById as getProductSettingsByIdService, getProductImage as getProductImageService, createProduct as createProductService, updateProduct as updateProductService, deleteProduct as deleteProductService, getPaginatedProductsWithFiltering as getProductsPaginatedWithFilteringService, getProductById as getProductByIdService, getRelatedProducts as getRelatedProductsService, getMostPurchasedProductWithDetails as getMostPurchasedProductWithDetailsService, getPurchasedProductsByMonth as getPurchasedProductsByMonthService } from "../services/product";
 import { sendSuccessResponse } from "../middlewares/success";
 import { getAuthenticatedUserId } from "../middlewares/auth";
 import { addReview } from "../services/review";
@@ -39,6 +39,16 @@ export const getProductById = catchAsyncErrors(async (req: Request, res: Respons
   const product = await getProductByIdService(id);
   await addReview({ userId, productId: product.id })
   sendSuccessResponse(res, 200, "Product fetched successfully", product);
+});
+
+export const getMostPurchasedProductWithDetails = catchAsyncErrors(async (_: Request, res: Response) => {
+  const product = await getMostPurchasedProductWithDetailsService();
+  sendSuccessResponse(res, 200, "Product fetched successfully", product);
+});
+
+export const getPurchasedProductByMonth = catchAsyncErrors(async (_: Request, res: Response) => {
+  const purchases = await getPurchasedProductsByMonthService();
+  sendSuccessResponse(res, 200, "purchases product fetched successfully", purchases);
 });
 
 export const getProductImage = catchAsyncErrors(async (req: Request, res: Response) => {

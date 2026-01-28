@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/", getAllCategories);
 router.get("/identities", verifyAuthentication, requirePermission(PERMISSIONS.VIEW_PRIVATE), getAllCategoriesIdentities);
-router.get("/with-subcategories", getAllCategoriesWithSubCategory); //! Not modified in client
+router.get("/with-subcategories", getAllCategoriesWithSubCategory);
 router.get("/:id", verifyAuthentication, categoryIdValidation, validation, requirePermission(PERMISSIONS.VIEW_PRIVATE), getCategoryById);
 
 router.post("/", verifyAuthentication, createCategoryValidation, validation, requirePermission(PERMISSIONS.ADD), createCategory);

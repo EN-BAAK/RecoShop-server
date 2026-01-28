@@ -6,6 +6,7 @@ import { Permission } from "../models/permission";
 import ErrorHandler from "../middlewares/error";
 import { getClosestRole } from "../middlewares/auth";
 import { Wallet } from "../models/wallet";
+import { ROLES } from "../constants/globals";
 
 export const getAllUsers = async (isVerified?: boolean, excludeId?: number) => {
   const whereClause: any = {};
@@ -45,6 +46,31 @@ export const getAllUsers = async (isVerified?: boolean, excludeId?: number) => {
     };
   });
 };
+
+export const getAdminsAndManagers = async () => {
+  const adminsAndManagers = await User.findAll({
+    attributes: { exclude: ["createdAt", "updatedAt"] },
+    include: [
+      {
+        model: Permission,
+        as: "permission",
+        where: {
+          permissions: {
+            [Op.in]: [ROLES.ADMIN, ROLES.MANAGER],
+          },
+        },
+      },
+    ],
+  });
+
+  const adminsAndManagersJson = adminsAndManagers.map((user) => user.toJSON() as any);
+  adminsAndManagersJson.forEach((user) => {
+    user.role = getClosestRole(user.permission.permissions);
+    delete user.permission
+  })
+
+  return adminsAndManagersJson;
+}
 
 export const getOwnProfile = async (userId: number) => {
   const user = await User.findByPk(userId, {

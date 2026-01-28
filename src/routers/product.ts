@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllProducts, getProductSettingsById, getProductImage, createProduct, updateProduct, deleteProduct, getProductsPaginatedWithFiltering, getProductById, getRelatedProducts } from "../controllers/product";
+import { getAllProducts, getProductSettingsById, getProductImage, createProduct, updateProduct, deleteProduct, getProductsPaginatedWithFiltering, getProductById, getRelatedProducts, getMostPurchasedProductWithDetails, getPurchasedProductByMonth } from "../controllers/product";
 import { createProduct as createProductValidation, updateProduct as updateProductValidation, productIdParam as productIdParamValidation, getProductsByCategory as getProductsByCategoryValidation } from "../validations/product";
 import { validation } from "../middlewares/error";
 import { uploadProductImage } from "../utils/multer";
@@ -12,6 +12,8 @@ router.get("/settings/:id", verifyAuthentication, requirePermission(PERMISSIONS.
 router.get("/:id/image", productIdParamValidation, validation, getProductImage);
 router.get("/shop/related-products/:id", productIdParamValidation, validation, getRelatedProducts);
 router.get("/shop", getProductsByCategoryValidation, validation, getProductsPaginatedWithFiltering);
+router.get("/top-purchased", getMostPurchasedProductWithDetails);
+router.get("/purchases-monthly", verifyAuthentication, requirePermission(PERMISSIONS.VIEW_PRIVATE), getPurchasedProductByMonth);
 router.get("/:id", productIdParamValidation, validation, getProductById);
 router.get("/", verifyAuthentication, requirePermission(PERMISSIONS.VIEW_PRIVATE), getAllProducts);
 

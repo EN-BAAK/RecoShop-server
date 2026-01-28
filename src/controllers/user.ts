@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllUsers as getAllUsersService, deleteUser as deleteUserService, getOwnProfile as getOwnProfileService, getUserProfile as getUserProfileService } from "../services/user";
+import { getAllUsers as getAllUsersService, deleteUser as deleteUserService, getOwnProfile as getOwnProfileService, getUserProfile as getUserProfileService, getAdminsAndManagers as getAdminsAndManagersService } from "../services/user";
 import { AuthenticatedRequest } from "../types/requests";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
@@ -10,6 +10,11 @@ export const getAllUsers = catchAsyncErrors(async (req: AuthenticatedRequest, re
 
   const users = await getAllUsersService(isVerified === undefined ? undefined : isVerified === "true", excludeId);
   sendSuccessResponse(res, 200, "Users fetched successfully", users);
+})
+
+export const getAdminsAndManagers = catchAsyncErrors(async (_:Request, res:Response) => {
+  const result = await getAdminsAndManagersService()
+  sendSuccessResponse(res, 200, "Users fetched successfully", result);
 })
 
 export const getOwnProfile = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
