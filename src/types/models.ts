@@ -152,3 +152,23 @@ export interface RateAttributes {
 
 export interface RateCreationAttributes
   extends Omit<RateAttributes, "id"> { }
+
+export interface GroupBranchAttributes {
+  id: number;
+  name: string;
+}
+
+export interface GroupBranchCreationAttributes extends Omit<GroupBranchAttributes, "id"> { }
+
+export interface BranchAttributes {
+  id: number;
+  name: string;
+  location?: string;
+  facebook?: string;
+  instagram?: string;
+  phone?: string;
+  telephone?: string;
+  groupId?: number;
+}
+
+export interface BranchCreationAttributes extends Omit<BranchAttributes, "id"> { }
