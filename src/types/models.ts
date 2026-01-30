@@ -172,3 +172,15 @@ export interface BranchAttributes {
 }
 
 export interface BranchCreationAttributes extends Omit<BranchAttributes, "id"> { }
+
+export interface MessageAttributes {
+  id: number;
+  email: string;
+  phone?: string;
+  subject?: string;
+  msg: string;
+  username?: string;
+  createdAt?: Date;
+}
+
+export interface MessageCreationAttributes extends Omit<MessageAttributes, "id" | "createdAt"> {}

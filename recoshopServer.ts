@@ -20,6 +20,7 @@ import RateRouter from "./src/routers/rate"
 import CommentRouter from "./src/routers/comment"
 import GroupBranchRouter from "./src/routers/groupBranch"
 import BranchRouter from "./src/routers/branch"
+import MessageRouter from "./src/routers/message"
 
 const app = express()
 
@@ -45,6 +46,7 @@ app.use("/api/v0/rates", RateRouter)
 app.use("/api/v0/comments", CommentRouter)
 app.use("/api/v0/group-branches", GroupBranchRouter)
 app.use("/api/v0/branches", BranchRouter)
+app.use("/api/v0/messages", MessageRouter)
 app.use("/api", RouteNotFound)
 
 app.use(error)
