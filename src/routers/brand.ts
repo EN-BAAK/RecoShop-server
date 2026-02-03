@@ -8,7 +8,7 @@ import { requirePermission, verifyAuthentication } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/", verifyAuthentication, requirePermission(PERMISSIONS.VIEW_PRIVATE), getAllBrands);
+router.get("/", getAllBrands);
 router.get("/identities", verifyAuthentication, requirePermission(PERMISSIONS.VIEW_PRIVATE), getAllBrandsIdentities);
 router.get("/name/:name/image", brandNameValidation, validation, getBrandImageByName);
 router.get("/:id/image", verifyAuthentication, brandIdValidation, validation, requirePermission(PERMISSIONS.VIEW_PRIVATE), getBrandImageById);
